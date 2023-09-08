@@ -5,8 +5,7 @@
   "workspaces": {
     "packages": [
       "packages/hardhat",
-      "packages/nextjs",
-      "packages/subgraph"
+      "packages/nextjs"
     ]
   },
   "scripts": {
@@ -27,15 +26,7 @@
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "vercel": "yarn workspace @se-2/nextjs vercel",
-    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "stop-node": "yarn workspace @se-2/subgraph stop-node",
-    "clean-node": "yarn workspace @se-2/subgraph clean-node",
-    "run-node": "yarn workspace @se-2/subgraph run-node",
-    "local-create": "yarn workspace @se-2/subgraph local-create",
-    "local-ship": "yarn workspace @se-2/subgraph local-ship",
-    "abi-copy": "yarn workspace @se-2/subgraph abi-copy",
-    "codegen": "yarn workspace @se-2/subgraph codegen"
+    "vercel": "yarn workspace @se-2/nextjs vercel"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
