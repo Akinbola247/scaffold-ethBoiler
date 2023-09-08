@@ -1,105 +1,180 @@
-import React, { useCallback, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, SparklesIcon } from "@heroicons/react/24/outline";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Popover, Transition } from '@headlessui/react';
+import clsx from 'clsx';
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const router = useRouter();
-  const isActive = router.pathname === href;
+import { Container } from '../components/Container';
+import { ClassAttributes, Fragment, JSX, SVGProps, HTMLAttributes, useEffect, useRef, JSXElementConstructor, ReactNode, HTMLProps, RefObject, CSSProperties, MutableRefObject, StyleHTMLAttributes } from 'react';
+import { ConnectKitButton } from 'connectkit';
 
-  return (
-    <Link
-      href={href}
-      passHref
-      className={`${
-        isActive ? "bg-secondary shadow-md" : ""
-      } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-    >
-      {children}
-    </Link>
-  );
-};
+function CloseIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+            <path
+                d="m17.25 6.75-10.5 10.5M6.75 6.75l10.5 10.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
 
-/**
- * Site header
- */
-export const Header = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const burgerMenuRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(
-    burgerMenuRef,
-    useCallback(() => setIsDrawerOpen(false), []),
-  );
+function ChevronDownIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 8 6" aria-hidden="true" {...props}>
+            <path
+                d="M1.75 1.75 4 4.25l2.25-2.5"
+                fill="none"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
 
-  const navLinks = (
-    <>
-      <li>
-        <NavLink href="/">Home</NavLink>
-      </li>
-      <li>
-        <NavLink href="/debug">
-          <BugAntIcon className="h-4 w-4" />
-          Debug Contracts
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/example-ui">
-          <SparklesIcon className="h-4 w-4" />
-          Example UI
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/blockexplorer">
-          <MagnifyingGlassIcon className="h-4 w-4" />
-          Block Explorer
-        </NavLink>
-      </li>
-    </>
-  );
 
-  return (
-    <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <div className="lg:hidden dropdown" ref={burgerMenuRef}>
-          <label
-            tabIndex={0}
-            className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
-            onClick={() => {
-              setIsDrawerOpen(prevIsOpenState => !prevIsOpenState);
-            }}
-          >
-            <Bars3Icon className="h-1/2" />
-          </label>
-          {isDrawerOpen && (
-            <ul
-              tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-              onClick={() => {
-                setIsDrawerOpen(false);
-              }}
+function MobileNavItem({ href, children }: { href: string, children: ReactNode; }) {
+    return (
+        <li>
+            <Popover.Button as={Link} href={href} className="block py-2">
+                {children}
+            </Popover.Button>
+        </li>
+    );
+}
+
+function MobileNavigation(props: HTMLAttributes<HTMLElement>) {
+    return (
+        <Popover {...props}>
+            <Popover.Button className="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur ">
+                Menu
+                <ChevronDownIcon className="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 " />
+            </Popover.Button>
+            <Transition.Root>
+                <Transition.Child
+                    as={Fragment}
+                    enter="duration-150 ease-out"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="duration-150 ease-in"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <Popover.Overlay className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur-sm " />
+                </Transition.Child>
+                <Transition.Child
+                    as={Fragment}
+                    enter="duration-150 ease-out"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="duration-150 ease-in"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                >
+                    <Popover.Panel
+                        focus
+                        className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 "
+                    >
+                        <div className="flex flex-row-reverse items-center justify-between">
+                            <Popover.Button aria-label="Close menu" className="-m-1 p-1">
+                                <CloseIcon className="h-6 w-6 text-zinc-500 " />
+                            </Popover.Button>
+                            <h2 className="text-sm font-medium text-zinc-600 ">
+                                Navigation
+                            </h2>
+                        </div>
+                        <nav className="mt-6">
+                            <ul className="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 ">
+                                <MobileNavItem href="/">Home</MobileNavItem>
+                                <MobileNavItem href="/start">Start</MobileNavItem>
+                            </ul>
+                        </nav>
+                    </Popover.Panel>
+                </Transition.Child>
+            </Transition.Root>
+        </Popover>
+    );
+}
+
+function NavItem({ href, children }: { href: string, children: ReactNode; }) {
+    let isActive = useRouter().pathname === href;
+
+    return (
+        <li>
+            <Link
+                href={href}
+                className={clsx(
+                    'relative block px-3 py-2 transition rounded-md',
+                    isActive
+                        ? 'bg-slate-700 text-white'
+                        : 'hover:bg-slate-100 hover:text-slate-900'
+                )}
             >
-              {navLinks}
+                {children}
+                {/* {isActive && (
+                    <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-blue-700/0 via-blue-700/40 to-blue-700/0" />
+                )} */}
+            </Link>
+        </li>
+    );
+}
+
+function DesktopNavigation(props: JSX.IntrinsicAttributes & ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement>) {
+    return (
+        <nav {...props}>
+            <ul className="flex rounded-sm bg-white/90 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur ">
+                <NavItem href="/">Home</NavItem>
+                <NavItem href="/start">Start</NavItem>
+                <NavItem href="/create-organization">Create Organization</NavItem>
+                <NavItem href="/create-plan">Create plan</NavItem>
+                <NavItem href="/manage-plan">Manage plan</NavItem>
+                <NavItem href="/subscribe">Subscribe</NavItem>
+                <NavItem href="/subscriptions">Subscriptions</NavItem>
             </ul>
-          )}
-        </div>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
-          </div>
-        </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
-      </div>
-      <div className="navbar-end flex-grow mr-4">
-        <RainbowKitCustomConnectButton />
-        <FaucetButton />
-      </div>
-    </div>
-  );
-};
+        </nav>
+    );
+}
+
+
+export function Header() {
+    let isHomePage = useRouter().pathname === '/';
+
+      return (
+        <>
+            <header
+                className="pointer-events-none relative z-50 flex flex-col"
+                style={{
+                    height: 'var(--header-height)',
+                    marginBottom: 'var(--header-mb)',
+                }}
+            >
+                <div
+                >
+                    <Container
+                        className="top-[var(--header-top,theme(spacing.6))] w-full"
+                        style={{ position: 'var(--header-inner-position)' } as unknown as CSSProperties}
+                    >
+                        <div className="relative flex gap-4">
+                            <div className="flex flex-1">
+                            </div>
+                            <div className="flex flex-1 justify-end md:justify-center">
+                                <MobileNavigation className="pointer-events-auto md:hidden" />
+                                <DesktopNavigation className="pointer-events-auto hidden md:block" />
+                            </div>
+                            <div className="flex justify-end md:flex-1">
+                                <div className="pointer-events-auto">
+                                    <ConnectKitButton />
+                                </div>
+                            </div>
+                        </div>
+                    </Container>
+                </div>
+            </header>
+        </>
+    );
+}
